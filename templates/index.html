@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forest Fire Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #FF9800;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 36px;
+        }
+
+        p {
+            color: #777;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            flex: 1;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .input-group input {
+            flex: 2;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #FF9800;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #e68900;
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 20px;
+            color: #f44336;
+        }
+
+        .footer {
+            background-color: #FF9800;
+            padding: 20px;
+            color: #fff;
+            margin-top: 30px;
+            width: 100%;
+            text-align: center;
+
+        }
+
+        .footer p {
+            margin: 5px 0;
+            font-color:blue;
+        }
+
+        .footer .team {
+            display: flex;
+            justify-content: space-between;
+            text-align: left;
+        }
+
+        .footer .team div {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Forest Fire Prediction</h1>
+        <p>Predict the probability of Forest-Fire Occurrence</p>
+        <form id="prediction-form" action="{{ url_for('predict') }}" method="post">
+            <div class="input-group">
+                <label for="temperature">Temperature:</label>
+                <input type="number" id="temperature" name="temperature" required>
+            </div>
+            <div class="input-group">
+                <label for="oxygen">Oxygen:</label>
+                <input type="number" id="oxygen" name="oxygen" required>
+            </div>
+            <div class="input-group">
+                <label for="humidity">Humidity:</label>
+                <input type="number" id="humidity" name="humidity" required>
+            </div>
+            <button type="submit">Predict Probability</button>
+        </form>
+        <div class="result" id="result">
+            {% if pred %}
+                <h2>{{ pred }}</h2>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="team">
+            <div>
+                <p><strong>About Team</strong></p>
+                <p>We are a team of college students working on this project. Our project team is made up of skilled individuals, each with unique expertise contributing to our shared goals. We communicate regularly, using meetings and online tools to collaborate effectively.</p>
+            </div>
+            <div>
+                <p><strong>Team Members</strong></p>
+                <p>P. Tulika Lakshmi<br>E. Nandhini<br>C. Sri Chahna<br>D. Manasa Praneetha</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("prediction-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: form.method,
+                body: formData
+            })
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const result = doc.querySelector('.result h2').textContent;
+                document.getElementById("result").innerHTML = `<h2>${result}</h2>`;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
